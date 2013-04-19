@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>
+        @Todo
+    </title>
+    <link rel="stylesheet" href="static/main.css"/>
+    <script src="js/jquery.js"></script>
+    <script src="js/tool.js"></script>
+    <script src="js/jquery.ui.custom.js"></script>
+    <script src="js/base.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/loading.js"></script>
+    <script src="js/list.js"></script>
+    <script src="js/easterEggs.js"></script>
+    <script src="js/ready.js"></script>
+</head>
+<body>
+<!--登陆面板-->
+<div id="login_p">
+    <div class="input">
+        <input type="text" name="email" placeholder="Email">
+    </div>
+    <div class="input">
+        <input type="password" name="psw" placeholder="PassWord">
+    </div>
+    <div class="input" id="username" style="display: none">
+        <input type="text" name="username" placeholder="Name">
+    </div>
+    <input type="checkbox" name="reg" value="1">Register
+    <button id="do_login">Login</button>
+</div>
+<!--登陆面板end-->
+<!--输入本地密码面板-->
+<div id="localpassword_p">
+    <input type="password" id="localpassword">
+</div>
+<!--输入本地密码面板end-->
+<!--正在加载面板-->
+<div id="loading_p">
+    <div style="text-align: center">Loading...</div>
+</div>
+<!--正在加载面板end-->
+<!--主面板-->
+<div id="main_p">
+    <input type="text" id="add" placeholder="New Task?">
+    <ul>
+    </ul>
+</div>
+<!--主面板end-->
+</body>
+</html>
