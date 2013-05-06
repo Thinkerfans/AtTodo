@@ -25,6 +25,7 @@ body {
 /*主面板*/
 #main_p {
     display: none;
+    float: left;
     width: 300px;
     margin: 0;
 
@@ -48,10 +49,11 @@ body {
 }
 
 #main_p ul li {
+    width: 280px;
     cursor: pointer;
     background: #79D5D5;
     color: #FFFFFF;
-    padding: 10px 10px 10px 15px;
+    padding: 10px 10px 10px 10px;
     margin: 5px 0;
     list-style: none;
 }
