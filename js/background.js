@@ -25,6 +25,36 @@ function contextMenusAdd(info, tab) {
 }
 
 /**
+ *
+ * 限制上微博
+ */
+
+function checkForValidUrl(tabId, changeInfo, tab) {
+    var site_no = [
+        "weibo.com",
+        "t.qq.com",
+        "qzone.qq.com",
+        "pengyou.com"
+    ];
+    var __NO = false;
+    for (var i in site_no) {
+        if (tab.url.indexOf(site_no[i]) > -1) {
+            __NO = true;
+            break;
+        }
+    }
+    if (__NO) {
+        var date = new Date();
+        //9点到12点，下雨一点到晚上10点禁止上
+        if ((date.getHours() > 9 && date.getHours() < 12) || (date.getHours() > 13 && date.getHours() < 22)) {
+            chrome.tabs.update(tabId, {url:"http://127.0.0.1"});
+        }
+    }
+};
+
+chrome.tabs.onUpdated.addListener(checkForValidUrl);
+
+/**
  * 每10分钟从服务器获取下新数据
  */
 function tenM() {
