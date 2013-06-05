@@ -36,17 +36,22 @@ function checkForValidUrl(tabId, changeInfo, tab) {
         "qzone.qq.com",
         "pengyou.com"
     ];
+	var date = new Date();
+	
     var __NO = false;
     for (var i in site_no) {
+		if(date.getDay()>5||date.getDay()<1){
+			break;
+		}
         if (tab.url.indexOf(site_no[i]) > -1) {
             __NO = true;
             break;
         }
     }
     if (__NO) {
-        var date = new Date();
+        
         //9点到12点，下雨一点到晚上10点禁止上
-        if ((date.getHours() > 9 && date.getHours() < 12) || (date.getHours() > 13 && date.getHours() < 22)) {
+        if ((date.getHours() > 8 && date.getHours() < 12) || (date.getHours() > 13 && date.getHours() < 17)) {
             chrome.tabs.update(tabId, {url:"http://127.0.0.1"});
         }
     }
