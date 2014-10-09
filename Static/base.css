@@ -1,0 +1,27 @@
+/*定义基本的一些css*/
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+/*使用.left的都是float:left*/
+body {
+    float: left;
+    font-family: monospace "Microsoft YaHei", monospace;
+    font-size: 14px;
+    width: 300px;
+    height: 500px;
+    overflow-y: hidden;
+}
+
+div.left {
+    float: left;
+}
+
+/*定义消息样式*/
+.message {
+    position: fixed;
+    max-width: 100%;
+    top: 0;
+    font-size: 12px;
+    padding: 2px 0;
+}

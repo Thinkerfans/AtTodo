@@ -1,53 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>
-        @Todo
-    </title>
-    <link rel="stylesheet" href="static/main.css"/>
-    <script src="js/jquery.js"></script>
-    <script src="js/tool.js"></script>
-    <script src="js/jquery.ui.custom.js"></script>
-    <script src="js/base.js"></script>
-    <script src="js/login.js"></script>
-    <script src="js/loading.js"></script>
-    <script src="js/list.js"></script>
-    <script src="js/easterEggs.js"></script>
-    <script src="js/ready.js"></script>
+    <link rel="stylesheet" href="Static/base.css">
+    <link rel="stylesheet" href="Static/nav.css">
+    <link rel="stylesheet" href="Static/project.css">
+    <link rel="stylesheet" href="Static/main.css">
+    <link rel="stylesheet" href="Static/setting.css">
+    <script src="Lib/jquery-2.0.3.min.js"></script>
+    <script src="Lib/jquery.easing.js"></script>
+    <script src="Lib/jquery.ui.js"></script>
+    <script src="JS/base.js"></script>
+    <script src="JS/initialize.js"></script>
+    <script src="JS/ready.js"></script>
+    <script src="JS/Listener.js"></script>
 </head>
-<body>
-<!--登陆面板-->
-<div id="login_p">
-    <div class="input">
-        <input type="text" name="email" placeholder="Email">
+<body class="left">
+<div id="nav" class="left">
+</div>
+<div id="main" class="left">
+
+</div>
+<!--导航模板-->
+<script type="html/nav_item">
+    <div class="left nav_item" project-id="{id}">{name}</div>
+</script>
+<!--任务模板-->
+<script type="html/task">
+    <li class="left task {class}" data-id="{id}" data-sort="{sort}" data-sort-s="{sort_s}" {new} >{content}</li>
+</script>
+<!--项目模板-->
+<script type="html/project">
+    <div class="project left" project-id="{id}">
+        <input class="left new_task" type="text" project-id = "{id}" name="new_task" placeholder="New Task?">
+        <ul class="left tasks_list">{tasks}</ul>
     </div>
-    <div class="input">
-        <input type="password" name="psw" placeholder="PassWord">
-    </div>
-    <div class="input" id="username" style="display: none">
-        <input type="text" name="username" placeholder="Name">
-    </div>
-    <input type="checkbox" name="reg" value="1">Register
-    <button id="do_login">Login</button>
-</div>
-<!--登陆面板end-->
-<!--输入本地密码面板-->
-<div id="localpassword_p">
-    <input type="password" id="localpassword">
-</div>
-<!--输入本地密码面板end-->
-<!--正在加载面板-->
-<div id="loading_p">
-    <div style="text-align: center">Loading...</div>
-</div>
-<!--正在加载面板end-->
-<!--主面板-->
-<div id="main_p">
-    <input type="text" id="add" placeholder="New Task?">
-    <ul>
-    </ul>
-</div>
-<!--主面板end-->
+</script>
 </body>
 </html>

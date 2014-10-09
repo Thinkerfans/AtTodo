@@ -1,144 +1,202 @@
 /**
- * 开始监听事件
+ * Created by 步青 on 14-1-29.
  */
-$(document).ready(function () {
+function new_task() {
+    if (event.keyCode == 13 && $(this).val().trim()) {
+        var content = $(this).val().trim();
+        var project_id = $(this).attr('project-id');
+        var timestamp = new Date().getTime();
+        $("#main [project-id=" + project_id + "] ul").prepend($.render($('[type="html/task"]').html(),
+            {content: content, "new": "new=\"" + timestamp + "\"" + "style=\"display:none\""}));
+        $("[new=" + timestamp + "]").slideDown("normal");
+        $(this).val("");
+        // 发送到服务器保存
+        $.post(AddURL, getParameter({content: content, project_id: project_id}), function (json) {
+            if (json.status) {
+                $("[new=" + timestamp + "]").attr("id", "todo_" + json.data);
+                $("[new=" + timestamp + "]").attr("data-id", json.data);
+                //此处移除new属性
+                $("[new=" + timestamp + "]").removeAttr("new");
+                //更新图标的统计
+            } else {
+                msg(json.data);
+            }
+        }, 'json');
+    }
+}
+/**
+ * 点击导航的时候切换项目
+ * @returns {boolean}
+ */
+function nav_switch() {
+    //如果有active元素说明有正在执行的动作，就返回false
+    if ($(".active").length) {
+        return false;
+    }
+    var prev_project_id = $(this).prev('.nav_item').attr('project-id');
+    var i = 0;
+    while (i < 10) {
+        if (prev_project_id == $(".nav_item:eq(" + i + ")").attr('project-id')) {
+            break;
+        }
+        //导航按钮 Start
+        $(".nav_item:first").clone().appendTo("#nav");
+        $(".nav_item:first").remove();
+        //导航按钮 END
+        //项目面板 Start
+        $(".project:first").clone().appendTo("#main");
+        $(".project:first").remove();
+        //项目面板 END
+    }
+    $(".nav_item:first").clone().appendTo("#nav");
 
-    if (db("user_id") && db("ssid")) {
+    var this_item = $(this);
+    this_item.addClass('active');//先变换自己的大小和颜色
+    $(".nav_item:first").animate({width: -1, marginRight: -1, height: $(".nav_item:first").height()}, 600, 'easeOutExpo', function () {
+        $(".nav_item:first").remove();
+        this_item.removeClass('active');//先变换自己的大小和颜色
+    });
+    $(".project:first").clone().appendTo("#main");
+    $(".project:first").animate({marginLeft: -$(".project:first").width() - 8}, 600, 'easeOutExpo', function () {
+        $(".project:first").remove();
+    });
+}
+/**
+ * 编辑任务
+ */
+function task_modify() {
+    //进入编辑状态
+    if (this.contentEditable != 'true') {
+        this.contentEditable = true;
+        $(this).addClass('edit');
+        return false;
+    }
+    //保存编辑
+    if (event.keyCode == 13 && $(this).html().trim()) {
+        var content = $(this).html().trim();
+        var task_id = $(this).attr("data-id");
 
-        //是否开启了本地密码
-        if (db("localpassword") && db("lock")) {
-            //清除本地锁
-            $("#login_p").hide();
-            $("#localpassword_p").show();
-            $("#localpassword").keyup(function () {
-                if (event.keyCode == 13 && $(this).val().trim()) {
-                    if ($("#localpassword").val() == db("localpassword")) {
-                        $("#localpassword_p").hide();
-						db("lock", false);
-                        loading();
-                    } else {
-                        msg("呵呵！今天气不错！");
-                    }
+        $.post(ModifyURL, getParameter({content: content, task_id: task_id}), function (json) {
+            if (json.status) {
+                ;
+            } else {
+                msg(json.data);
+            }
+        }, 'json');
+        this.contentEditable = false;
+        $(this).removeClass('edit');
+        return false;
+    }
+}
+/**
+ * 完成操作
+ */
+function finish() {
+    $(this).addClass("finish");
+
+    var task_id = $(this).attr("data-id");
+    //没有id就不操作
+    if (task_id) {
+        $.post(FinishURL, getParameter({task_id: task_id}), function (json) {
+            if (json.status) {
+                //更新图标的统计
+                //updateCount();
+            } else {
+                msg(json.data);
+            }
+        }, 'json');
+    }
+    return false;
+}
+
+/**
+ * 解除完成状态
+ */
+function unFinish() {
+    $(this).removeClass("finish");
+
+    var task_id = $(this).attr("data-id");
+    //没有id就不操作
+    if (task_id) {
+        $.post(UnFinishURL, getParameter({task_id: task_id}), function (json) {
+            if (json.status) {
+                //更新图标的统计
+                //updateCount();
+            } else {
+                msg(json.data);
+            }
+        });
+    }
+}
+/**
+ * 移除操作
+ */
+function remove() {
+    $(this).animate({marginLeft: $("body").width(), height: "0", padding: "0 10px"}, "fast", function () {
+        $(this).remove();
+    });
+
+    var task_id = $(this).attr("data-id");
+    //没有id就不操作
+    if (task_id) {
+        $.post(RemoveURL, getParameter({task_id: task_id}), function (json) {
+            if (json.status) {
+                //updateCount();
+            } else {
+                msg(json.data);
+            }
+        });
+    }
+    return false;
+}
+/**
+ * 手动排序处理
+ * @param event
+ * @param ui
+ */
+function todoSort(event, ui) {
+    var task_id = ui.item.attr("data-id");
+    var next_sort;
+    var next_sort_s;
+    var prev_sort;
+    var prev_sort_s;
+    var drop_sort;
+    var drop_sort_s = false;
+    if (ui.item.next().length && ui.item.prev().length) {
+        next_sort = ui.item.next().attr("data-sort");
+        prev_sort = ui.item.prev().attr("data-sort");
+        prev_sort_s = ui.item.prev().attr("data-sort-s");
+        //下一个的sort+1
+        drop_sort = parseInt(next_sort) + 1;
+        if (drop_sort > prev_sort) {
+            drop_sort = prev_sort;
+        }
+        if (drop_sort == prev_sort) {
+            drop_sort_s = prev_sort_s - 1;
+        }
+
+    } else if (ui.item.next().length && !ui.item.prev().length) {
+        //是第一个的时候
+        next_sort = ui.item.next().attr("data-sort");
+        next_sort_s = ui.item.next().attr("data-sort-s");
+        drop_sort = parseInt(next_sort) + 1;
+    } else if (ui.item.prev().length && !ui.item.next().length) {
+        //是最后一个的时候
+        prev_sort = ui.item.prev().attr("data-sort");
+        prev_sort_s = ui.item.prev().attr("data-sort-s");
+        drop_sort = parseInt(prev_sort) - 1;
+    }
+    //把最新的sort更新
+    ui.item.attr("data-sort", drop_sort);
+    ui.item.attr("data-sort-s", drop_sort_s);
+    if (drop_sort > -1) {
+        $.post(SortURL, getParameter({task_id: task_id, drop_sort: drop_sort, drop_sort_s: drop_sort_s}),
+            function (json) {
+                if (json.status) {
+                    ;
+                } else {
+                    msg(json.data);
                 }
             });
-        } else {
-            loading();
-        }
     }
-    //显示注册的用户名
-
-    $("#login_p [name=reg]").change(function () {
-        $("#login_p #username").slideToggle("fast");
-    });
-    //检查登陆按钮
-    $("#do_login").click(function () {
-        do_login();
-    });
-    //在这每条todo上屏蔽右键菜单，执行下一步操作
-    $("body").on("contextmenu", "#main_p ul li", function (e) {
-
-        var li_class = $(this).attr("class");
-        if (!li_class) {
-            //todo完成操作
-            finish(this);
-        } else if (li_class == "finish") {
-            //删除操作
-            remove(this);
-        } else {
-            return true;
-        }
-        return false;
-    });
-    //监听完成的todo双击事件
-    $("body").on("dblclick", "#main_p ul li.finish", function (e) {
-        //由完成状态切换成为完成状态，即返回
-        unFinish(this);
-    });
-    //监听双击事件
-    $("body").on("dblclick", "#main_p ul li[class!=finish]", function () {
-        //首先保存前一个编辑内容>>>虽然不会出现这种情况
-        if ($("#main_p ul li.edit").length) {
-            saveModify($("#main_p ul li.edit"));
-        }
-
-        //进入编辑状态
-        var li_class = $(this).attr("class");
-        if (!li_class) {
-            $(this).addClass("edit");
-            $(this).attr("contenteditable", true);
-            $(this).attr("draggable", false);
-            $(this).focus();
-        }
-    });
-    //监听编辑状态的失去焦点保存
-    $("body").on("blur", "#main_p ul li.edit", function () {
-        //保存新内容，回复状态
-        saveModify(this);
-    });
-    //编辑状态时监听enter按键
-    $("body").on("keydown", "#main_p ul li.edit", function () {
-        //保存新内容，回复状态
-        if (event.keyCode == 13) {
-            saveModify(this);
-            return false;
-        }
-    });
-
-//监听enter键
-    $("#add").keyup(function () {
-        if (event.keyCode == 13 && $(this).val().trim()) {
-            var input = $(this).val();
-            if (input.toLocaleLowerCase() == "logout" || input == "退出") {
-                //退出功能
-                $("#main_p").hide();
-                $("#main_p ul li").remove();
-                $("#login_p").slideDown();
-                localStorage.clear();
-                updateCount();
-                //开启喝水提醒
-            } else if (input == "喝水" || input.toLocaleLowerCase() == "water") {
-                water("on");
-                //取消喝水提醒
-            } else if (input == "不喝水了" || input.toLocaleLowerCase() == "nodrink") {
-                water("off");
-                //设置本地密码
-            } else if (input.toLocaleLowerCase().indexOf("localpassword:") == 0 &&
-                input.toLocaleLowerCase().length > 15) {
-                //@todo 字符串加密
-                db("localpassword", input.toLocaleLowerCase().substr(14));
-                msg("设置成功！");
-                //取消本地密码
-            } else if (input.toLocaleLowerCase() == "unsetlocalpassword" || input == "取消本地密码") {
-                db("localpassword", false);
-                msg("已取消！");
-                //修改密码
-            } else if (input.toLocaleLowerCase().indexOf("setpassword:") == 0) {
-
-                if (input.toLocaleLowerCase().length > 15) {
-                    setPassword(input.toLocaleLowerCase().substr(14));
-                } else {
-                    msg("密码太短了");
-                }
-
-            } else if (input.toLocaleLowerCase() == "lock" || input == "L") {
-                //开启本地锁
-                db("lock", 1);
-            } else if (input == "惠敏") {
-                msg("我想你……");
-            } else if (input == "吴世博") {
-                msg("↑↑↓↓←→←→AB");
-            } else if (input == "@彩蛋") {
-                msg("祝你们早日生米煮成熟饭！哈哈哈！");
-            } else {
-                saveAdd(this);
-            }
-            //每次操作都清空输入框
-            $(this).val("");
-            $(this).focus();
-        }
-    });
-    //实现拖动特效
-    $("#main_p ul").sortable({ opacity:0.5, axis:"y", cancel:"li.edit",
-        update:todoSort
-    });
-});
+}

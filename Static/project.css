@@ -1,0 +1,57 @@
+/*每一个项目的样式*/
+/*input框样式*/
+/*每个项目*/
+.project {
+    width: 15%;
+    margin-right: 8px;
+}
+
+input.new_task {
+    display: block;
+    font-family: monospace "Microsoft YaHei", monospace;
+    outline: none;
+    border: none;
+    background: #EEEEEE;
+    margin: 10px 0 0 0;
+    padding: 10px 5px 10px 15px;
+    width: 100%;
+    clear: both;
+    box-sizing: border-box;
+}
+
+ul.tasks_list {
+    clear: both;
+    margin: 10px 0 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.tasks_list li {
+    background: #EECCAA;
+    color: #FFFFFF;
+    margin: 5px 0;
+    padding: 8px;
+    clear: both;
+    cursor: pointer;
+}
+
+ul.tasks_list li:hover {
+    opacity: 0.6;
+}
+
+ul.tasks_list li.edit, ul.tasks_list li.edit:hover {
+    background: #EEEEEE;
+    outline: none;
+    color: #000000;
+    opacity: 1;
+    padding-left: 10px;
+    cursor: text;
+}
+
+ul.tasks_list li.finish {
+    background: #EEEEEE;
+    outline: none;
+    color: #888888;
+    text-decoration: line-through;
+    padding-left: 10px;
+}

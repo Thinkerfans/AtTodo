@@ -1,0 +1,24 @@
+/*定义上面项目导航*/
+#nav {
+    position: fixed; /*固定住*/
+    clear: both;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#nav .nav_item {
+    color: #AAAAAA;
+    margin-top: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#nav .nav_item:hover {
+    color: #666666;
+}
+
+#nav .nav_item:first-child, #nav .active, #nav .active:hover {
+    color: #EECCAA;
+    font-size: 22px;
+    margin-top: 0;
+}
